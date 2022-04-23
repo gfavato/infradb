@@ -3,22 +3,29 @@ module.exports = async function (context, req) {
     
     if (req.body.data) {    
         let doc = req.body
+
 //Save original data at webhooks collection
         context.bindings.statusChange = doc;
         doc.failure_id = doc.data.id
-        //let last = context.bindings.inputDocument; //agora falta SQL do último evento
 
 //Create new object
-        let novoEventoJSON = {"failure_id": null,"status": null};
-        
+        let novoEventoJSON = {"failure_id": null,};
+        let last = null
+
 //Verifica se é evento fechamento e cria visita se for
         if(doc.data.attributes.state == "COMPLETED"){
 
+// Query last in_progress state
+        last = context.bindings.inputDocument;
+        //JSON.parse(last);
+        //context.log(last)
+
 // Transfer data from trigger and input bindings
         novoEventoJSON.failure_id = doc.data.id;
-        novoEventoJSON.status = doc.data.status;
-        novoEventoJSON.state_description = doc.data.attributes.state_description;
-        novoEventoJSON.comentario = "encontrou um evento completo e cria este arquivo"
+        novoEventoJSON.state = doc.data.attributes.state;
+        novoEventoJSON.inicio = "last._ts";
+        //novoEventoJSON.termino = last.data.attributes.state;
+        novoEventoJSON.description = doc.data.attributes.description;
 
 // Output new object to events collection
         context.bindings.novoEvento = novoEventoJSON;
@@ -27,7 +34,7 @@ module.exports = async function (context, req) {
 // Notify success, http status code 201 (created)
         context.res = {
             status: 201,
-            body: "foi"
+            body: last
         };
         return;
     }
