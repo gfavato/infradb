@@ -32,6 +32,15 @@
       "connectionStringSetting": "nosqlcontractor_DOCUMENTDB",
       "direction": "out",
       "type": "cosmosDB"
+    },
+    {
+      "name": "inputDocument",
+      "databaseName": "WebhookInfraspeak",
+      "collectionName": "webhookOriginal",
+      "connectionStringSetting": "nosqlcontractor_DOCUMENTDB",
+      "sqlQuery": "SELECT * FROM c WHERE c.data.id = {failure_id} AND c.data.attributes.state = \"PAUSED\" ORDER BY c._ts DESC OFFSET 0 LIMIT 1",
+      "direction": "in",
+      "type": "cosmosDB"
     }
   ]
 }
